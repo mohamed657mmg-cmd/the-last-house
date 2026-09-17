@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050505">
+<title>THE LAST HOUSE</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    color:#fff;
+}
+
+/* =========================
+   MAIN MENU
+========================= */
+
+#menu{
+    width:100%;
+    height:100%;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 50% 30%,rgba(80,0,0,.28),transparent 35%),
+        linear-gradient(135deg,#090909,#020202);
+}
+
+#menu::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+}
+
+.menu-box{
+    width:min(500px,90%);
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+.logo{
+    font-size:clamp(38px,8vw,70px);
+    font-weight:900;
+    letter-spacing:5px;
+    color:#eee;
+    text-shadow:0 0 25px rgba(255,0,0,.25);
+}
+
+.subtitle{
+    margin-top:8px;
+    color:#777;
+    font-size:14px;
+    letter-spacing:3px;
+}
+
+.warning{
+    margin:28px auto;
+    max-width:380px;
+    padding:13px;
+    border:1px solid #282828;
+    background:#0c0c0c;
+    color:#999;
+    font-size:13px;
+}
+
+.menu-buttons{
+    display:grid;
+    gap:12px;
+}
+
+.menu-btn{
+    min-height:55px;
+    border:1px solid #303030;
+    border-radius:10px;
+    background:#111;
+    color:#eee;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.menu-btn:hover{
+    background:#1b1b1b;
+    border-color:#555;
+}
+
+.menu-btn.primary{
+    background:#7b1111;
+    border-color:#a51b1b;
+}
+
+.menu-btn.primary:hover{
+    background:#981616;
+}
+
+.version{
+    margin-top:25px;
+    color:#444;
+    font-size:11px;
+}
+
+/* =========================
+   DIFFICULTY
+========================= */
+
+#difficulty{
+    display:none;
+    width:100%;
+    height:100%;
+    align-items:center;
+    justify-content:center;
+    background:#050505;
+}
+
+.diff-box{
+    width:min(700px,90%);
+    text-align:center;
+}
+
+.diff-title{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.diff-sub{
+    color:#777;
+    margin-bottom:25px;
+}
+
+.diff-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.diff-card{
+    padding:25px 12px;
+    background:#101010;
+    border:1px solid #292929;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.diff-card h3{
+    margin-bottom:8px;
+}
+
+.diff-card p{
+    color:#777;
+    font-size:12px;
+    line-height:1.7;
+}
+
+.easy h3{color:#55b56a}
+.medium h3{color:#d5a83b}
+.hard h3{color:#d84a4a}
+
+.back{
+    margin-top:20px;
+    padding:12px 25px;
+    background:#111;
+    border:1px solid #333;
+    color:#aaa;
+    border-radius:8px;
+}
+
+/* =========================
+   GAME
+========================= */
+
+#game{
+    display:none;
+    width:100%;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+    background:#080808;
+}
+
+/* غرفة البداية */
+
+.room{
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(ellipse at 50% 35%,rgba(90,90,90,.14),transparent 35%),
+        linear-gradient(180deg,#151515 0%,#090909 65%,#050505 100%);
+}
+
+/* السقف */
+
+.ceiling{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:18%;
+    background:#101010;
+    border-bottom:2px solid #242424;
+}
+
+/* الأرض */
+
+.floor{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:35%;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #111 0px,
+            #111 70px,
+            #0b0b0b 72px,
+            #0b0b0b 140px
+        );
+    transform:perspective(500px) rotateX(5deg);
+    transform-origin:bottom;
+}
+
+/* السرير */
+
+.bed{
+    position:absolute;
+    width:36%;
+    height:18%;
+    bottom:17%;
+    left:32%;
+    background:#171717;
+    border:2px solid #292929;
+    border-radius:10px 10px 4px 4px;
+}
+
+.mattress{
+    position:absolute;
+    inset:10% 5%;
+    background:#202020;
+    border-radius:8px;
+}
+
+.pillow{
+    position:absolute;
+    width:22%;
+    height:30%;
+    top:15%;
+    left:12%;
+    background:#303030;
+    border-radius:8px;
+}
+
+/* الباب */
+
+.door{
+    position:absolute;
+    right:7%;
+    top:20%;
+    width:13%;
+    height:48%;
+    background:#151515;
+    border:3px solid #292929;
+    box-shadow:inset 0 0 25px #000;
+}
+
+.door-handle{
+    position:absolute;
+    left:15%;
+    top:52%;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#777;
+}
+
+/* نافذة */
+
+.window{
+    position:absolute;
+    left:7%;
+    top:20%;
+    width:20%;
+    height:25%;
+    background:#030405;
+    border:5px solid #292929;
+}
+
+.window::before,
+.window::after{
+    content:"";
+    position:absolute;
+    background:#292929;
+}
+
+.window::before{
+    width:5px;
+    height:100%;
+    left:50%;
+}
+
+.window::after{
+    height:5px;
+    width:100%;
+    top:50%;
+}
+
+/* =========================
+   HUD
+========================= */
+
+.hud{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.top-bar{
+    position:absolute;
+    top:12px;
+    left:12px;
+    right:12px;
+    display:flex;
+    justify-content:space-between;
+    direction:ltr;
+}
+
+.hud-box{
+    padding:9px 13px;
+    background:rgba(0,0,0,.65);
+    border:1px solid #292929;
+    border-radius:8px;
+    font-size:12px;
+    color:#aaa;
+}
+
+.noise{
+    position:absolute;
+    top:58px;
+    left:50%;
+    transform:translateX(-50%);
+    width:160px;
+    height:5px;
+    background:#171717;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.noise-fill{
+    width:8%;
+    height:100%;
+    background:#b43a3a;
+    transition:.2s;
+}
+
+/* رسالة */
+
+.message{
+    position:absolute;
+    top:25%;
+    left:50%;
+    transform:translateX(-50%);
+    width:80%;
+    text-align:center;
+    font-size:clamp(18px,4vw,30px);
+    color:#ddd;
+    opacity:0;
+    transition:1s;
+    text-shadow:0 2px 10px #000;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.joystick{
+    position:absolute;
+    bottom:30px;
+    left:30px;
+    width:105px;
+    height:105px;
+    border-radius:50%;
+    background:rgba(255,255,255,.06);
+    border:2px solid rgba(255,255,255,.13);
+    pointer-events:auto;
+}
+
+.stick{
+    position:absolute;
+    width:48px;
+    height:48px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+}
+
+.actions{
+    position:absolute;
+    right:25px;
+    bottom:25px;
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+    direction:ltr;
+    pointer-events:auto;
+}
+
+.action{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    border:1px solid #444;
+    background:rgba(10,10,10,.8);
+    color:#ddd;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.action.big{
+    width:70px;
+    height:70px;
+}
+
+.pause{
+    pointer-events:auto;
+    cursor:pointer;
+}
+
+/* =========================
+   PAUSE
+========================= */
+
+#pause{
+    display:none;
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    align-items:center;
+    justify-content:center;
+    z-index:20;
+}
+
+.pause-box{
+    width:min(350px,85%);
+    text-align:center;
+}
+
+.pause-box h2{
+    font-size:30px;
+    margin-bottom:25px;
+}
+
+.pause-box button{
+    width:100%;
+    margin:5px 0;
+    padding:14px;
+    border-radius:8px;
+    background:#151515;
+    border:1px solid #333;
+    color:#eee;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+    .diff-grid{
+        grid-template-columns:1fr;
+    }
+
+    .diff-card{
+        padding:16px;
+    }
+
+    .joystick{
+        width:85px;
+        height:85px;
+        left:18px;
+        bottom:18px;
+    }
+
+    .stick{
+        width:40px;
+        height:40px;
+    }
+
+    .actions{
+        right:15px;
+        bottom:15px;
+    }
+
+    .action{
+        width:50px;
+        height:50px;
+    }
+
+    .action.big{
+        width:62px;
+        height:62px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- القائمة -->
+
+<section id="menu">
+    <div class="menu-box">
+
+        <div class="logo">THE LAST HOUSE</div>
+
+        <div class="subtitle">THE GIRL & THE DOLL</div>
+
+        <div class="warning">
+            ⚠ لا تصدر أي صوت... هي تسمعك.
+        </div>
+
+        <div class="menu-buttons">
+            <button class="menu-btn primary" id="singleBtn">
+                👤 اللعب الفردي
+            </button>
+
+            <button class="menu-btn" id="multiBtn">
+                👥 اللعب الجماعي
+            </button>
+
+            <button class="menu-btn">
+                📖 القصة
+            </button>
+
+            <button class="menu-btn">
+                ⚙️ الإعدادات
+            </button>
+        </div>
+
+        <div class="version">EARLY BUILD • v0.1</div>
+    </div>
+</section>
+
+<!-- اختيار الصعوبة -->
+
+<section id="difficulty">
+
+    <div class="diff-box">
+
+        <h1 class="diff-title">اختر مستوى الصعوبة</h1>
+
+        <p class="diff-sub">
+            هل أنت مستعد لدخول المنزل؟
+        </p>
+
+        <div class="diff-grid">
+
+            <div class="diff-card easy" data-level="easy">
+                <h3>🟢 سهل</h3>
+                <p>
+                    وقت أطول<br>
+                    حركة أبطأ للفتاة<br>
+                    الأدلة أوضح
+                </p>
+            </div>
+
+            <div class="diff-card medium" data-level="medium">
+                <h3>🟡 متوسط</h3>
+                <p>
+                    وقت متوسط<br>
+                    أدلة مخفية<br>
+                    ذكاء أعلى
+                </p>
+            </div>
+
+            <div class="diff-card hard" data-level="hard">
+                <h3>🔴 صعب</h3>
+                <p>
+                    وقت أقل<br>
+                    الفتاة أسرع<br>
+                    ألغاز أصعب
+                </p>
+            </div>
+
+        </div>
+
+        <button class="back" id="backBtn">رجوع</button>
+
+    </div>
+
+</section>
+
+<!-- اللعبة -->
+
+<section id="game">
+
+    <div class="room">
+
+        <div class="ceiling"></div>
+
+        <div class="window"></div>
+
+        <div class="door">
+            <div class="door-handle"></div>
+        </div>
+
+        <div class="bed">
+            <div class="mattress"></div>
+            <div class="pillow"></div>
+        </div>
+
+        <div class="floor"></div>
+
+    </div>
+
+    <div class="hud">
+
+        <div class="top-bar">
+
+            <div class="hud-box">
+                ⏱️ <span id="timer">10:00</span>
+            </div>
+
+            <div class="hud-box">
+                🔦 100%
+            </div>
+
+            <button class="hud-box pause" id="pauseBtn">
+                ⏸
+            </button>
+
+        </div>
+
+        <div class="noise">
+            <div class="noise-fill" id="noiseFill"></div>
+        </div>
+
+        <div class="message" id="message">
+            لا تُصدر أي صوت...
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+        <div class="joystick" id="joystick">
+            <div class="stick" id="stick"></div>
+        </div>
+
+        <div class="actions">
+
+            <button class="action" id="flashBtn">
+                🔦
+            </button>
+
+            <button class="action" id="interactBtn">
+                🤲
+            </button>
+
+            <button class="action big" id="runBtn">
+                🏃
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Pause -->
+
+    <div id="pause">
+
+        <div class="pause-box">
+
+            <h2>متوقف مؤقتًا</h2>
+
+            <button id="resumeBtn">
+                ▶ متابعة
+            </button>
+
+            <button id="restartBtn">
+                🔄 إعادة اللعبة
+            </button>
+
+            <button id="menuBtn">
+                🏠 القائمة الرئيسية
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const menu = document.getElementById("menu");
+const difficulty = document.getElementById("difficulty");
+const game = document.getElementById("game");
+
+const singleBtn = document.getElementById("singleBtn");
+const multiBtn = document.getElementById("multiBtn");
+const backBtn = document.getElementById("backBtn");
+
+const pause = document.getElementById("pause");
+const pauseBtn = document.getElementById("pauseBtn");
+const resumeBtn = document.getElementById("resumeBtn");
+const restartBtn = document.getElementById("restartBtn");
+const menuBtn = document.getElementById("menuBtn");
+
+const timerElement = document.getElementById("timer");
+const message = document.getElementById("message");
+const noiseFill = document.getElementById("noiseFill");
+
+let gameTimer;
+let seconds = 600;
+let currentLevel = "easy";
+let paused = false;
+let noise = 8;
+
+/* فتح اختيار الصعوبة */
+
+singleBtn.addEventListener("click", () => {
+    menu.style.display = "none";
+    difficulty.style.display = "flex";
+});
+
+/* الجماعي */
+
+multiBtn.addEventListener("click", () => {
+    alert(
+        "👥 اللعب الجماعي\n\n" +
+        "سيتم إضافة نظام Hotspot Multiplayer في مرحلة لاحقة.\n\n" +
+        "النسخة الأولى نبدأها باللعب الفردي."
+    );
+});
+
+/* رجوع */
+
+backBtn.addEventListener("click", () => {
+    difficulty.style.display = "none";
+    menu.style.display = "flex";
+});
+
+/* اختيار الصعوبة */
+
+document.querySelectorAll(".diff-card").forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        currentLevel = card.dataset.level;
+
+        difficulty.style.display = "none";
+        game.style.display = "block";
+
+        startGame();
+
+    });
+
+});
+
+/* بدء اللعبة */
+
+function startGame(){
+
+    clearInterval(gameTimer);
+
+    if(currentLevel === "easy"){
+        seconds = 600;
+    }
+
+    if(currentLevel === "medium"){
+        seconds = 480;
+    }
+
+    if(currentLevel === "hard"){
+        seconds = 360;
+    }
+
+    paused = false;
+    noise = 8;
+
+    updateTimer();
+    updateNoise();
+
+    message.style.opacity = "1";
+
+    setTimeout(() => {
+        message.style.opacity = "0";
+    },3000);
+
+    gameTimer = setInterval(() => {
+
+        if(paused) return;
+
+        seconds--;
+
+        updateTimer();
+
+        if(seconds <= 0){
+
+            clearInterval(gameTimer);
+
+            alert("انتهى الوقت... 😨");
+
+            game.style.display = "none";
+            menu.style.display = "flex";
+        }
+
+    },1000);
+}
+
+/* المؤقت */
+
+function updateTimer(){
+
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    timerElement.textContent =
+        String(minutes).padStart(2,"0") +
+        ":" +
+        String(secs).padStart(2,"0");
+}
+
+/* الصوت */
+
+function updateNoise(){
+
+    noise = Math.max(0,Math.min(100,noise));
+
+    noiseFill.style.width = noise + "%";
+}
+
+/* الجري يزيد الضوضاء */
+
+const runBtn = document.getElementById("runBtn");
+
+runBtn.addEventListener("pointerdown", () => {
+
+    noise += 35;
+    updateNoise();
+
+    message.textContent = "⚠ لقد أصدرت صوتًا...";
+
+    message.style.opacity = "1";
+
+    setTimeout(() => {
+        message.style.opacity = "0";
+    },1200);
+
+});
+
+runBtn.addEventListener("pointerup", () => {
+
+    setTimeout(() => {
+
+        noise -= 20;
+        updateNoise();
+
+    },1000);
+
+});
+
+/* التفاعل */
+
+document.getElementById("interactBtn").addEventListener("click", () => {
+
+    noise += 8;
+    updateNoise();
+
+    message.textContent = "تبحث عن شيء مفيد...";
+
+    message.style.opacity = "1";
+
+    setTimeout(() => {
+        message.style.opacity = "0";
+    },1200);
+
+});
+
+/* الكشاف */
+
+document.getElementById("flashBtn").addEventListener("click", () => {
+
+    message.textContent = "🔦 الكشاف يعمل";
+
+    message.style.opacity = "1";
+
+    setTimeout(() => {
+        message.style.opacity = "0";
+    },1000);
+
+});
+
+/* Pause */
+
+pauseBtn.addEventListener("click", () => {
+
+    paused = true;
+    pause.style.display = "flex";
+
+});
+
+resumeBtn.addEventListener("click", () => {
+
+    paused = false;
+    pause.style.display = "none";
+
+});
+
+restartBtn.addEventListener("click", () => {
+
+    pause.style.display = "none";
+    startGame();
+
+});
+
+menuBtn.addEventListener("click", () => {
+
+    clearInterval(gameTimer);
+
+    pause.style.display = "none";
+    game.style.display = "none";
+    menu.style.display = "flex";
+
+});
+
+/* عصا التحكم */
+
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
+
+let dragging = false;
+
+joystick.addEventListener("pointerdown", e => {
+
+    dragging = true;
+    joystick.setPointerCapture(e.pointerId);
+
+});
+
+joystick.addEventListener("pointermove", e => {
+
+    if(!dragging) return;
+
+    const rect = joystick.getBoundingClientRect();
+
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    let x = e.clientX - centerX;
+    let y = e.clientY - centerY;
+
+    const max = 27;
+
+    const distance = Math.sqrt(x*x + y*y);
+
+    if(distance > max){
+
+        x = x / distance * max;
+        y = y / distance * max;
+
+    }
+
+    stick.style.left = `calc(50% + ${x}px)`;
+    stick.style.top = `calc(50% + ${y}px)`;
+
+    if(Math.abs(x) + Math.abs(y) > 20){
+
+        noise += 1;
+        updateNoise();
+
+    }
+
+});
+
+joystick.addEventListener("pointerup", () => {
+
+    dragging = false;
+
+    stick.style.left = "50%";
+    stick.style.top = "50%";
+
+});
+
+</script>
+
+</body>
+  </html>
