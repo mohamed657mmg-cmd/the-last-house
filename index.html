@@ -1,70 +1,1175 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبتي الأولى</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            color: #fff;
-            font-family: sans-serif;
-        }
-        canvas {
-            border: 2px solid #fff;
-            background-color: #000;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>THE LAST HOUSE</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050507;
+  color:#eee;
+  font-family:Arial,Tahoma,sans-serif;
+}
+
+button{
+  font-family:inherit;
+}
+
+#app{
+  width:100%;
+  height:100%;
+  position:relative;
+  overflow:hidden;
+  background:#050507;
+}
+
+/* ================= START SCREEN ================= */
+
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:25px;
+}
+
+.screen.active{
+  display:flex;
+}
+
+#startScreen{
+  background:
+    radial-gradient(circle at 50% 35%,rgba(100,100,120,.13),transparent 28%),
+    linear-gradient(180deg,#09090d,#020203);
+}
+
+.logo{
+  text-align:center;
+  letter-spacing:5px;
+  font-size:clamp(34px,8vw,78px);
+  font-weight:900;
+  color:#ddd;
+  text-shadow:0 0 25px #777;
+}
+
+.subtitle{
+  color:#777;
+  margin-top:10px;
+  letter-spacing:3px;
+  font-size:12px;
+}
+
+.menu{
+  width:min(360px,90vw);
+  margin-top:40px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.menu button,
+.diff button{
+  border:1px solid #38383d;
+  background:linear-gradient(180deg,#18181d,#0d0d11);
+  color:#eee;
+  padding:15px;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:bold;
+  transition:.15s;
+}
+
+.menu button:active,
+.diff button:active{
+  transform:scale(.97);
+  background:#24242a;
+}
+
+.danger{
+  border-color:#653535!important;
+}
+
+.version{
+  position:absolute;
+  bottom:12px;
+  color:#444;
+  font-size:10px;
+}
+
+/* ================= STORY ================= */
+
+.storyBox{
+  max-width:720px;
+  background:rgba(15,15,18,.94);
+  border:1px solid #29292e;
+  border-radius:12px;
+  padding:25px;
+  line-height:1.9;
+  color:#cfcfd2;
+}
+
+.storyBox h2{
+  margin-top:0;
+  color:#fff;
+}
+
+.back{
+  margin-top:20px;
+  background:#151519;
+  border:1px solid #333;
+  color:white;
+  padding:12px 30px;
+  border-radius:7px;
+}
+
+/* ================= DIFFICULTY ================= */
+
+.diff{
+  width:min(380px,90vw);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.diffTitle{
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.diffTitle h2{
+  margin:0;
+  font-size:28px;
+}
+
+.diffTitle p{
+  color:#777;
+}
+
+/* ================= GAME ================= */
+
+#game{
+  position:absolute;
+  inset:0;
+  display:none;
+  background:#08090b;
+}
+
+#game.active{
+  display:block;
+}
+
+/*
+  Fake 3D room.
+  The room changes based on player position.
+*/
+
+#world{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:#090b0d;
+}
+
+/* ceiling */
+
+.ceiling{
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:32%;
+  background:
+    linear-gradient(180deg,#111317,#090a0c);
+  transform:perspective(600px) rotateX(-10deg);
+  transform-origin:bottom;
+}
+
+/* floor */
+
+.floor{
+  position:absolute;
+  left:-15%;
+  right:-15%;
+  bottom:-12%;
+  height:58%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #161719 0px,
+      #161719 55px,
+      #101113 57px,
+      #101113 110px
+    );
+  transform:perspective(450px) rotateX(55deg);
+  transform-origin:top;
+}
+
+/* walls */
+
+.wallLeft,
+.wallRight{
+  position:absolute;
+  top:20%;
+  bottom:20%;
+  width:23%;
+  background:linear-gradient(90deg,#15171a,#090a0c);
+}
+
+.wallLeft{
+  left:0;
+  transform:skewY(8deg);
+}
+
+.wallRight{
+  right:0;
+  transform:skewY(-8deg);
+}
+
+/* back wall */
+
+.backWall{
+  position:absolute;
+  top:20%;
+  left:20%;
+  right:20%;
+  bottom:20%;
+  background:
+    linear-gradient(180deg,#17191c,#0c0d0f);
+  box-shadow:inset 0 0 80px #000;
+}
+
+/* door */
+
+.door{
+  position:absolute;
+  width:105px;
+  height:210px;
+  bottom:23%;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,#17100e,#30201b,#120d0b);
+  border:5px solid #0a0908;
+  box-shadow:0 0 25px #000;
+}
+
+.door:after{
+  content:"";
+  position:absolute;
+  right:12px;
+  top:50%;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#888;
+}
+
+/* window */
+
+.window{
+  position:absolute;
+  width:125px;
+  height:100px;
+  top:31%;
+  left:18%;
+  border:8px solid #17181b;
+  background:
+    linear-gradient(90deg,transparent 48%,#333 49%,#333 52%,transparent 53%),
+    linear-gradient(0deg,transparent 48%,#333 49%,#333 52%,transparent 53%),
+    #030407;
+  box-shadow:0 0 20px #000;
+}
+
+/* bed */
+
+.bed{
+  position:absolute;
+  width:190px;
+  height:70px;
+  bottom:28%;
+  right:12%;
+  background:#171719;
+  border-radius:6px;
+  box-shadow:0 12px 20px #000;
+}
+
+.bed:before{
+  content:"";
+  position:absolute;
+  left:-10px;
+  top:-28px;
+  width:65px;
+  height:55px;
+  background:#252529;
+  border-radius:5px;
+}
+
+/* doll */
+
+.doll{
+  position:absolute;
+  left:47%;
+  top:34%;
+  width:25px;
+  height:42px;
+  background:#bab0a3;
+  border-radius:12px 12px 8px 8px;
+  box-shadow:0 0 18px rgba(220,220,220,.12);
+}
+
+.doll:before{
+  content:"";
+  position:absolute;
+  top:-15px;
+  left:4px;
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  background:#c5b8aa;
+}
+
+/* ================= LIGHT ================= */
+
+#light{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      circle at var(--lightX,50%) var(--lightY,55%),
+      transparent 0,
+      transparent 18%,
+      rgba(0,0,0,.25) 32%,
+      rgba(0,0,0,.72) 62%,
+      rgba(0,0,0,.93) 100%
+    );
+  mix-blend-mode:multiply;
+  z-index:10;
+}
+
+/* ================= HUD ================= */
+
+#hud{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:20;
+}
+
+.topBar{
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.hudCard{
+  background:rgba(5,5,7,.75);
+  border:1px solid #29292d;
+  padding:8px 12px;
+  border-radius:7px;
+  font-size:12px;
+  color:#bbb;
+  backdrop-filter:blur(4px);
+}
+
+#timer{
+  font-weight:bold;
+  color:#ddd;
+}
+
+#noiseBox{
+  position:absolute;
+  top:58px;
+  left:50%;
+  transform:translateX(-50%);
+  width:180px;
+  text-align:center;
+}
+
+.noiseLabel{
+  font-size:10px;
+  color:#777;
+  margin-bottom:4px;
+}
+
+.noiseBar{
+  width:100%;
+  height:6px;
+  border:1px solid #333;
+  background:#080809;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+#noiseFill{
+  height:100%;
+  width:5%;
+  background:#aaa;
+  transition:.15s;
+}
+
+/* inventory */
+
+#inventory{
+  position:absolute;
+  right:12px;
+  top:62px;
+  display:flex;
+  gap:5px;
+}
+
+.item{
+  width:35px;
+  height:35px;
+  border:1px solid #333;
+  background:rgba(10,10,12,.8);
+  border-radius:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+}
+
+/* ================= CONTROLS ================= */
+
+#controls{
+  position:absolute;
+  inset:0;
+  z-index:30;
+  pointer-events:none;
+}
+
+#joystick{
+  position:absolute;
+  left:25px;
+  bottom:28px;
+  width:115px;
+  height:115px;
+  border:2px solid #444;
+  border-radius:50%;
+  background:rgba(15,15,18,.5);
+  pointer-events:auto;
+  touch-action:none;
+}
+
+#stick{
+  position:absolute;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#555;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  opacity:.85;
+}
+
+.actionButtons{
+  position:absolute;
+  right:22px;
+  bottom:25px;
+  display:grid;
+  grid-template-columns:repeat(2,70px);
+  gap:10px;
+  pointer-events:auto;
+}
+
+.action{
+  width:70px;
+  height:55px;
+  border:1px solid #444;
+  background:rgba(10,10,12,.78);
+  color:#ddd;
+  border-radius:9px;
+  font-size:11px;
+}
+
+.action:active{
+  background:#29292e;
+}
+
+#pauseBtn{
+  position:absolute;
+  top:105px;
+  left:12px;
+  width:45px;
+  height:40px;
+  background:rgba(5,5,7,.8);
+  border:1px solid #333;
+  color:#fff;
+  border-radius:6px;
+  pointer-events:auto;
+}
+
+/* ================= MESSAGE ================= */
+
+#message{
+  position:absolute;
+  left:50%;
+  bottom:155px;
+  transform:translateX(-50%);
+  background:rgba(5,5,7,.85);
+  border:1px solid #333;
+  padding:10px 18px;
+  border-radius:7px;
+  font-size:12px;
+  color:#ddd;
+  opacity:0;
+  transition:.3s;
+  z-index:40;
+  white-space:nowrap;
+}
+
+#message.show{
+  opacity:1;
+}
+
+/* ================= ENEMY ================= */
+
+#enemy{
+  position:absolute;
+  width:70px;
+  height:125px;
+  display:none;
+  z-index:8;
+  left:65%;
+  top:28%;
+  filter:drop-shadow(0 0 18px rgba(0,0,0,.9));
+}
+
+#enemy.show{
+  display:block;
+}
+
+.enemyHead{
+  position:absolute;
+  top:0;
+  left:20px;
+  width:30px;
+  height:34px;
+  border-radius:50%;
+  background:#b7aaa0;
+}
+
+.enemyBody{
+  position:absolute;
+  top:28px;
+  left:12px;
+  width:46px;
+  height:92px;
+  border-radius:25px 25px 5px 5px;
+  background:#19191d;
+}
+
+.enemyEyes{
+  position:absolute;
+  top:14px;
+  left:26px;
+  width:5px;
+  height:5px;
+  background:#eee;
+  border-radius:50%;
+  box-shadow:14px 0 #eee;
+}
+
+/* ================= OVERLAY ================= */
+
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  padding:20px;
+}
+
+.overlay.show{
+  display:flex;
+}
+
+.overlay h2{
+  font-size:34px;
+  margin:0 0 15px;
+}
+
+.overlay p{
+  color:#999;
+  max-width:450px;
+  line-height:1.7;
+}
+
+.overlay button{
+  margin-top:15px;
+  padding:13px 30px;
+  background:#17171b;
+  border:1px solid #444;
+  color:#fff;
+  border-radius:7px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px) and (orientation:portrait){
+
+  #app:after{
+    content:"↻  اقلب الهاتف للوضع الأفقي";
+    position:absolute;
+    inset:0;
+    z-index:999;
+    background:#050507;
+    color:#ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    text-align:center;
+  }
+}
+
+@media(min-width:701px){
+  #joystick{
+    left:40px;
+    bottom:35px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="app">
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+<!-- ================= START ================= -->
 
-        // متغيرات اللعبة الأساسية
-        let player = {
-            x: 375,
-            y: 500,
-            width: 50,
-            height: 50,
-            color: '#00ff00',
-            speed: 5
-        };
+<section id="startScreen" class="screen active">
 
-        // تحديث حالة اللعبة
-        function update() {
-            // إضافة منطق الحركة والتحكم هنا
-        }
+  <div class="logo">THE LAST HOUSE</div>
+  <div class="subtitle">SOME HOUSES SHOULD NEVER BE ENTERED</div>
 
-        // رسم العناصر على الشاشة
-        function draw() {
-            // تنظيف الشاشة في كل إطار
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+  <div class="menu">
+    <button onclick="startGame('single')">▶ لعب فردي</button>
+    <button onclick="showScreen('difficultyScreen')">👥 Multiplayer</button>
+    <button onclick="showStory()">📖 القصة</button>
+    <button onclick="showSettings()">⚙ الإعدادات</button>
+  </div>
 
-            // رسم اللاعب
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
+  <div class="version">VERSION 0.1 — PERSONAL PROJECT</div>
+</section>
 
-        // الحلقة الرئيسية للعبة (Game Loop)
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
+<!-- ================= DIFFICULTY ================= -->
 
-        // تشغيل اللعبة
-        gameLoop();
-    </script>
-</body>
-</html>
+<section id="difficultyScreen" class="screen">
+
+  <div class="diffTitle">
+    <h2>اختر مستوى الصعوبة</h2>
+    <p>كلما زادت الصعوبة أصبح المنزل أكثر خطورة</p>
+  </div>
+
+  <div class="diff">
+    <button onclick="startGame('single','easy')">
+      EASY<br>
+      <small>وقت أطول • عدو أبطأ • أدلة أوضح</small>
+    </button>
+
+    <button onclick="startGame('single','medium')">
+      MEDIUM<br>
+      <small>تجربة متوازنة • ألغاز أصعب</small>
+    </button>
+
+    <button class="danger" onclick="startGame('single','hard')">
+      HARD<br>
+      <small>وقت أقل • عدو أسرع • ألغاز أصعب</small>
+    </button>
+
+    <button class="back" onclick="showScreen('startScreen')">
+      رجوع
+    </button>
+  </div>
+</section>
+
+<!-- ================= STORY ================= -->
+
+<section id="storyScreen" class="screen">
+
+  <div class="storyBox">
+
+    <h2>📖 THE LAST HOUSE</h2>
+
+    <p>
+      منذ 20 سنة كانت طفلة صغيرة تُدعى ليان تلعب أمام منزل قديم
+      مع دميتها المفضلة.
+    </p>
+
+    <p>
+      في أحد الأيام سقطت الدمية من نافذة المنزل المهجور.
+      دخلت ليان لاستعادتها، لكن الباب أُغلق خلفها...
+      ولم تخرج ليان مرة أخرى.
+    </p>
+
+    <p>
+      مرت السنوات، لكن سكان المنطقة ظلوا يسمعون أحيانًا
+      ضحكات طفلة قادمة من داخل المنزل.
+    </p>
+
+    <p>
+      بعد 20 سنة تصل رسالة غامضة إلى مجموعة من الأصدقاء:
+    </p>
+
+    <p style="color:#ddd;text-align:center">
+      "وجدنا دمية ليان... العنوان هنا."
+    </p>
+
+    <p>
+      يدخل الأصدقاء المنزل بحثًا عن الحقيقة.
+      يجدون الدمية فوق كرسي، وبجانبها رسالة قصيرة:
+    </p>
+
+    <p style="color:#aaa;text-align:center">
+      "كنت أنتظر عودتكم."
+    </p>
+
+    <p>
+      ثم تُغلق الأبواب.
+    </p>
+
+  </div>
+
+  <button class="back" onclick="showScreen('startScreen')">
+    رجوع
+  </button>
+
+</section>
+
+<!-- ================= GAME ================= -->
+
+<section id="game">
+
+  <div id="world">
+
+    <div class="ceiling"></div>
+    <div class="backWall"></div>
+    <div class="wallLeft"></div>
+    <div class="wallRight"></div>
+    <div class="floor"></div>
+
+    <div class="window"></div>
+    <div class="bed"></div>
+    <div class="door"></div>
+    <div class="doll"></div>
+
+    <div id="enemy">
+      <div class="enemyHead"></div>
+      <div class="enemyBody"></div>
+      <div class="enemyEyes"></div>
+    </div>
+
+  </div>
+
+  <div id="light"></div>
+
+  <!-- HUD -->
+
+  <div id="hud">
+
+    <div class="topBar">
+
+      <div class="hudCard">
+        ⏱ <span id="timer">10:00</span>
+      </div>
+
+      <div class="hudCard">
+        🔋 <span id="battery">100%</span>
+      </div>
+
+    </div>
+
+    <div id="noiseBox">
+      <div class="noiseLabel">NOISE</div>
+      <div class="noiseBar">
+        <div id="noiseFill"></div>
+      </div>
+    </div>
+
+    <div id="inventory">
+      <div class="item" id="itemKey">🔑</div>
+      <div class="item" id="itemTool">🔧</div>
+      <div class="item" id="itemFuse">⚡</div>
+    </div>
+
+  </div>
+
+  <!-- CONTROLS -->
+
+  <div id="controls">
+
+    <button id="pauseBtn" onclick="pauseGame()">Ⅱ</button>
+
+    <div id="joystick">
+      <div id="stick"></div>
+    </div>
+
+    <div class="actionButtons">
+      <button class="action" onclick="toggleFlashlight()">🔦<br>كشاف</button>
+      <button class="action" onclick="interact()">✋<br>تفاعل</button>
+      <button class="action" onclick="run()">🏃<br>جري</button>
+      <button class="action" onclick="hidePlayer()">🚪<br>اختباء</button>
+    </div>
+
+  </div>
+
+  <div id="message"></div>
+
+  <!-- PAUSE -->
+
+  <div id="pauseOverlay" class="overlay">
+
+    <h2>PAUSED</h2>
+    <p>اللعبة متوقفة مؤقتًا.</p>
+
+    <button onclick="resumeGame()">▶ متابعة</button>
+    <button onclick="quitGame()">⌂ القائمة الرئيسية</button>
+
+  </div>
+
+  <!-- GAME OVER -->
+
+  <div id="gameOver" class="overlay">
+
+    <h2 id="gameOverTitle">GAME OVER</h2>
+    <p id="gameOverText"></p>
+
+    <button onclick="restartGame()">↻ إعادة اللعب</button>
+    <button onclick="quitGame()">⌂ القائمة الرئيسية</button>
+
+  </div>
+
+</section>
+
+</div>
+
+<script>
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+const state = {
+
+  mode:"single",
+
+  difficulty:"easy",
+
+  time:600,
+
+  noise:5,
+
+  battery:100,
+
+  flashlight:true,
+
+  paused:false,
+
+  gameOver:false,
+
+  hidden:false,
+
+  key:false,
+
+  tool:false,
+
+  fuse:false,
+
+  playerX:50,
+
+  playerY:50,
+
+  enemyX:70,
+
+  enemyY:35,
+
+  enemyActive:false,
+
+  lastMove:Date.now(),
+
+  running:false
+
+};
+
+const difficultyData = {
+
+  easy:{
+    time:600,
+    enemySpeed:.025,
+    noiseMultiplier:.65
+  },
+
+  medium:{
+    time:480,
+    enemySpeed:.04,
+    noiseMultiplier:1
+  },
+
+  hard:{
+    time:360,
+    enemySpeed:.065,
+    noiseMultiplier:1.35
+  }
+
+};
+
+let timerInterval;
+let enemyInterval;
+let batteryInterval;
+
+/* =========================================================
+   SCREEN SYSTEM
+========================================================= */
+
+function showScreen(id){
+
+  document.querySelectorAll(".screen").forEach(s=>{
+    s.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+}
+
+function showStory(){
+  showScreen("storyScreen");
+}
+
+function showSettings(){
+
+  alert(
+    "⚙ الإعدادات\n\n"+
+    "• الصوت: سيتم تطويره\n"+
+    "• الجرافيك: متوسط/عالي\n"+
+    "• التحكم: Touch\n"+
+    "• الوضع: Landscape\n\n"+
+    "الإصدار الحالي Prototype."
+  );
+}
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame(mode="single",difficulty="easy"){
+
+  state.mode=mode;
+  state.difficulty=difficulty || "easy";
+
+  state.time=difficultyData[state.difficulty].time;
+
+  state.noise=5;
+  state.battery=100;
+  state.flashlight=true;
+  state.paused=false;
+  state.gameOver=false;
+  state.hidden=false;
+
+  state.key=false;
+  state.tool=false;
+  state.fuse=false;
+
+  state.playerX=50;
+  state.playerY=50;
+
+  state.enemyX=72;
+  state.enemyY=32;
+
+  document.getElementById("startScreen").classList.remove("active");
+  document.getElementById("difficultyScreen").classList.remove("active");
+  document.getElementById("storyScreen").classList.remove("active");
+
+  document.getElementById("game").classList.add("active");
+
+  document.getElementById("pauseOverlay").classList.remove("show");
+  document.getElementById("gameOver").classList.remove("show");
+
+  updateHUD();
+
+  showMessage(
+    "استيقظت... ابحث عن طريقة للخروج."
+  );
+
+  clearInterval(timerInterval);
+  clearInterval(enemyInterval);
+  clearInterval(batteryInterval);
+
+  timerInterval=setInterval(updateTimer,1000);
+
+  enemyInterval=setInterval(updateEnemy,120);
+
+  batteryInterval=setInterval(updateBattery,2000);
+
+  setTimeout(()=>{
+    showMessage("انتبه... المنزل ليس فارغًا.");
+  },5000);
+}
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function updateTimer(){
+
+  if(state.paused || state.gameOver) return;
+
+  state.time--;
+
+  if(state.time<=0){
+
+    endGame(
+      "انتهى الوقت",
+      "لم تستطع الخروج من المنزل في الوقت المحدد."
+    );
+
+    return;
+  }
+
+  updateHUD();
+}
+
+/* =========================================================
+   BATTERY
+========================================================= */
+
+function updateBattery(){
+
+  if(state.paused || state.gameOver) return;
+
+  if(state.flashlight){
+
+    state.battery-=1;
+
+    if(state.battery<=0){
+
+      state.battery=0;
+
+      state.flashlight=false;
+
+      showMessage("انتهت بطارية الكشاف.");
+    }
+  }
+
+  updateHUD();
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+  let min=Math.floor(state.time/60);
+  let sec=state.time%60;
+
+  document.getElementById("timer").textContent=
+    String(min).padStart(2,"0")+":"+
+    String(sec).padStart(2,"0");
+
+  document.getElementById("battery").textContent=
+    state.battery+"%";
+
+  document.getElementById("noiseFill").style.width=
+    Math.max(0,Math.min(100,state.noise))+"%";
+
+  document.getElementById("itemKey").style.opacity=
+    state.key ? "1" : ".25";
+
+  document.getElementById("itemTool").style.opacity=
+    state.tool ? "1" : ".25";
+
+  document.getElementById("itemFuse").style.opacity=
+    state.fuse ? "1" : ".25";
+}
+
+/* =========================================================
+   FLASHLIGHT
+========================================================= */
+
+function toggleFlashlight(){
+
+  if(state.battery<=0){
+
+    showMessage("لا توجد طاقة كافية.");
+
+    return;
+  }
+
+  state.flashlight=!state.flashlight;
+
+  document.getElementById("light").style.opacity=
+    state.flashlight ? "1" : ".18";
+
+  showMessage(
+    state.flashlight ?
+    "الكشاف يعمل." :
+    "أطفأت الكشاف."
+  );
+}
+
+/* =========================================================
+   NOISE
+========================================================= */
+
+function addNoise(amount){
+
+  const multiplier=
+    difficultyData[state.difficulty].noiseMultiplier;
+
+  state.noise+=amount*multiplier;
+
+  state.noise=Math.min(100,state.noise);
+
+  updateHUD();
+
+  if(state.noise>70){
+
+    state.enemyActive=true;
+
+    showMessage("لقد سمع شيئًا...");
+  }
+}
+
+setInterval(()=>{
+
+  if(state.gameOver || state.paused) return;
+
+  state.noise=Math.max(0,state.noise-2);
+
+  updateHUD();
+
+},500);
+
+/* =========================================================
+   RUN
+========================================================= */
+
+function run(){
+
+  if(state.hidden){
+
+    showMessage("لا يمكنك الجري و
